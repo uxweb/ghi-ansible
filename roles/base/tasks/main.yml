@@ -1,0 +1,21 @@
+---
+- name: Install vim
+  apt: pkg=vim state=installed update_cache=true
+
+- name: Install curl
+  apt: pkg=curl state=installed update_cache=true
+
+- name: Install unzip
+  apt: pkg=unzip state=installed update_cache=true
+
+- name: Install git
+  apt: pkg=git-core state=installed update_cache=true
+
+- name: Install ack-grep
+  apt: pkg=ack-grep state=installed update_cache=true
+
+- name: Install software-properties-common
+  apt: pkg=software-properties-common state=installed update_cache=true
+
+- name: Install build-essential
+  apt: pkg=build-essential state=installed update_cache=true

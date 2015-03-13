@@ -1,0 +1,16 @@
+---
+- name: Add PHP Repository
+  apt_repository: repo='ppa:ondrej/php5-5.6' state=present
+  register: ppastable
+
+- name: Install PHP 5.6
+  apt: pkg=php5 state=present update_cache=true
+  register: phpinstalled
+
+- name: Install PHP packages
+  apt: pkg={{ item }} state=present
+  with_items: php_packages
+
+- name: Install freeTDS for MSSQL
+  apt: pkg={{ item }} state=present
+  with_items: freetds_packages
