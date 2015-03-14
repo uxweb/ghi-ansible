@@ -4,13 +4,62 @@
   register: ppastable
 
 - name: Install PHP 5.6
-  apt: pkg=php5 state=present update_cache=true
+  when: ppastable|success
+  apt: pkg=php5 state=installed update_cache=true
   register: phpinstalled
 
 - name: Install PHP packages
-  apt: pkg={{ item }} state=present
-  with_items: php_packages
+  when: phpinstalled|success
+  apt: pkg={{ item }} state=installed update_cache=true
+  with_items:
+   - php5-fpm
+   - php5-cli
+   - php5-mysql
+   - php5-pgsql
+   - php5-sqlite
+   - php5-curl
+   - php5-gd
+   - php5-gmp
+   - php5-imagick
+   - php5-mcrypt
+   - php5-intl
+   - php5-mssql
+   - php5-memcached
+  notify:
+   - Start PHP-FPM
+
+- name: Add PHP-FPM PHP Configuration
+  when: phpinstalled|success
+  template: src=php.ini.j2 dest=/etc/php5/fpm/php.ini owner=root group=root
+  notify:
+   - Restart PHP-FPM
+
+- name: Add Default Resource Pool
+  when: phpinstalled|success
+  template: src=www.conf.j2 dest=/etc/php5/fpm/pool.d/www.conf owner=root group=root mode=644
+  notify:
+   - Restart PHP-FPM
 
 - name: Install freeTDS for MSSQL
-  apt: pkg={{ item }} state=present
-  with_items: freetds_packages
+  apt: pkg={{ item }} state=installed
+  with_items:
+   - freetds-dev
+   - freetds-bin
+   - tdsodbc
+  when: phpinstalled|success
+  register: freetdsinstalled
+  notify:
+   - Restart PHP-FPM
+
+- name: Add freeTDS Main Configuration Vesion 8.0 and UTF-8 Charset
+  when: freetdsinstalled|success
+  template: src=freetds.conf.j2 dest=/etc/freetds/freetds.conf owner=root group=root
+  notify:
+   - Restart PHP-FPM
+
+# Configuracion de locales para formato correcto de fechas con SQL Server
+- name: Add freeTDS Locales Configuration
+  when: freetdsinstalled|success
+  template: src=locales.conf.j2 dest=/etc/freetds/locales.conf owner=root group=root
+  notify:
+   - Restart PHP-FPM
