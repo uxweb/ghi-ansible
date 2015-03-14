@@ -1,6 +1,7 @@
+# Instala la ultima version liberada de NodeJs para Ubuntu
 ---
 - name: Ensure Ubuntu Distro is Supported
-  get_url: url=https://deb.nodesource.com/node/dists/{{ ansible_distribution_release }}/Release dest=/dev/null
+  get_url: url='https://deb.nodesource.com/node/dists/{{ ansible_distribution_release }}/Release' dest=/dev/null
   register: distrosupported
 
 - name: Remove Old Chris Lea PPA
@@ -8,7 +9,7 @@
   when: distrosupported|success
 
 - name: Remove Old Chris Lea Sources
-  file: path=/etc/apt/sources.list.d/chris-lea-node_js-{{ ansible_distribution_release }}.list state=absent
+  file: path='/etc/apt/sources.list.d/chris-lea-node_js-{{ ansible_distribution_release }}.list' state=absent
   when: distrosupported|success
 
 - name: Add Nodesource Keys
@@ -25,3 +26,12 @@
 - name: Install NodeJs
   apt: pkg=nodejs state=latest update_cache=true
   when: distrosupported|success
+  register: nodeinstalled
+
+- name: Install Gulp Globally
+  npm: name=gulp global=yes state=present
+  when: nodeinstalled|success
+
+- name: Install Bower Globally
+  npm: name=bower global=yes state=present
+  when: nodeinstalled|success

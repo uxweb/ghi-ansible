@@ -1,0 +1,10 @@
+---
+- hosts: prod
+  sudo: true
+  roles:
+   - users
+   - base
+   - nginx
+   - php
+   - composer
+   - nodejs
