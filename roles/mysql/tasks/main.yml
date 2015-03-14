@@ -1,0 +1,44 @@
+---
+- name: Install python-mysqldb Package
+  apt: pkg=python-mysqldb state=present
+  register: pythonmysqldbinstalled
+
+- name: Add MySQL 5.6 Repository
+  apt_repository: repo='ppa:ondrej/mysql-5.6' state=present update_cache=true
+  register: ppamysql
+
+- name: Install MySQL 5.6
+  apt: pkg=mysql-server-5.6 state=present
+  register: mysqlinstalled
+
+- name: Start MySQL
+  service: name=mysql state=started
+  when: pythonmysqldbinstalled|success
+
+- name: Change root Password
+  mysql_user: name=root state=present login_user=root login_password={{ root_password }} password={{ root_password }}
+  when: pythonmysqldbinstalled|success
+
+- name: Remove test Database
+  mysql_db: name=test state=absent login_user=root login_password={{ root_password }}
+  when: pythonmysqldbinstalled|success
+
+- name: Remove Anonymous User from localhost
+  mysql_user: name='' host=localhost state=absent login_user=root login_password={{ root_password }}
+  when: pythonmysqldbinstalled|success
+
+- name: Remove Root User from ::1
+  mysql_user: name=root host=::1 state=absent login_user=root login_password={{ root_password }}
+  when: pythonmysqldbinstalled|success
+
+- name: Create igh Database
+  mysql_db: name=igh state=present collation=utf8_unicode_ci login_user=root login_password={{ root_password }}
+  when: pythonmysqldbinstalled|success
+
+- name: Create igh User
+  mysql_user: name=igh host=localhost password={{ igh_password }} state=present priv=igh.*:SELECT,UPDATE login_user=root  login_password={{ root_password }}
+  when: pythonmysqldbinstalled|success
+
+- name: Create admin User
+  mysql_user: name=admin host=localhost password={{ admin_password }} state=present priv=*.*:All,GRANT login_user=root  login_password={{ root_password }}
+  when: pythonmysqldbinstalled|success

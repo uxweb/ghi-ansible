@@ -22,38 +22,38 @@
   notify:
    - Reload Nginx
 
-- name: Create Hermes Web Root
-  when: nginxinstalled|success
-  file: dest=/var/www/hermes/public mode=775 state=directory owner=www-data group=www-data
-  notify:
-   - Reload Nginx
+#- name: Create Hermes Web Root
+#  when: nginxinstalled|success
+#  file: dest=/var/www/hermes/public mode=775 state=directory owner=www-data group=www-data
+#  notify:
+#   - Reload Nginx
 
 - name: Web Root Permissions
   when: nginxinstalled|success
-  file: dest=/var/www/hermes mode=775 state=directory owner=www-data group=www-data recurse=yes
+  file: dest=/var/www mode=775 state=directory owner=www-data group=www-data recurse=yes
   notify:
    - Reload Nginx
 
-- name: Create Hermes Web Index File
-  when: nginxinstalled|success
-  copy: src=index.html dest=/var/www/hermes/public/index.html mode=775 owner=www-data group=www-data force=yes
-  notify:
-   - Reload Nginx
+#- name: Create Hermes Web Index File
+#  when: nginxinstalled|success
+#  copy: src=index.html dest=/var/www/hermes/public/index.html mode=775 owner=www-data group=www-data force=yes
+#  notify:
+#   - Reload Nginx
 
-- name: Add Hermes Site Config
-  when: nginxinstalled|success
-  register: hermesconfig
-  template: src=hermes-default.j2 dest=/etc/nginx/sites-available/hermes-default.conf owner=root group=root
-  notify:
-   - Reload Nginx
+#- name: Add Hermes Site Config
+#  when: nginxinstalled|success
+#  register: hermesconfig
+#  template: src=hermes-default.j2 dest=/etc/nginx/sites-available/hermes-default.conf owner=root group=root
+#  notify:
+#   - Reload Nginx
 
-- name: Enable Hermes Site Config
-  when: hermesconfig|success
-  file: src=/etc/nginx/sites-available/hermes-default.conf dest=/etc/nginx/sites-enabled/hermes-default.conf state=link
-  notify:
-   - Reload Nginx
+#- name: Enable Hermes Site Config
+#  when: hermesconfig|success
+#  file: src=/etc/nginx/sites-available/hermes-default.conf dest=/etc/nginx/sites-enabled/hermes-default.conf state=link
+#  notify:
+#   - Reload Nginx
 
 # Este directorio funciona para clonar los repositorios de aplicaciones
 - name: Create Releases Directory
   when: nginxinstalled|success
-  file: dest=/var/www/hermes/releases mode=775 state=directory owner=www-data group=www-data
+  file: dest=/var/www/releases mode=775 state=directory owner=www-data group=www-data
