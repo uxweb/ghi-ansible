@@ -19,3 +19,6 @@
 
 - name: Install build-essential
   apt: pkg=build-essential state=installed update_cache=true
+
+- name: Generates Spanish MX Locale
+  locale_gen: name=es_MX.UTF-8 state=present

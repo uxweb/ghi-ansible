@@ -6,7 +6,10 @@
   authorized_key: user=admin key="{{ common_public_key }}" state=present
 
 - name: Create Deploy User
-  user: name=deploy password={{ deploy_password }} groups=www-data append=yes shell=/bin/bash state=present
-
+  user: name=deploy password={{ deploy_password }} generate_ssh_key=yes ssh_key_bits=4096 ssh_key_comment='deploy@grupohi.mx' groups=www-data append=yes shell=/bin/bash state=present
+  
 - name: Add Deployer Authorized Key
   authorized_key: user=deploy key="{{ common_public_key }}" state=present
+
+- name: Add Deployer Authorized Key for Developer Ubueno
+  authorized_key: user=deploy key="{{ ubueno_mac_public_key }}" state=present
